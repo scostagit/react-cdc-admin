@@ -4,6 +4,8 @@ import './css/pure-min.css';
 import './css/side-menu.css';
 import $ from 'jquery';
 import  InputCustomizado  from './componentes/InputCustomizado';
+import BotaoSubmitCustomizado from './componentes/BotaoSubmitCustomizado';
+
 
 class App extends Component {
 
@@ -95,6 +97,13 @@ class App extends Component {
   }
 
   setJob(event){   
+    /**
+     * ===============================================================================================================
+     * -- setState
+     * ===============================================================================================================
+     * Notificamos o React que uma verificação de atualização é necessária através da invocação da função setState.
+     *  Nela passamos a propriedade que já existe na variável state e também passamos o novo valor que deve ser associado a ela.
+     */
     this.setState({job: event.target.value});
   } 
 
@@ -134,18 +143,25 @@ class App extends Component {
               { /* outra forma de user o bind, mas a mais recomendada e usar o do construtor.
                  <form className="pure-form pure-form-aligned" onSubmit={this.enviaForm.bind(this)} method="post">*/}
                 <form className="pure-form pure-form-aligned" onSubmit={this.enviaForm} method="post">
-                  <div className="pure-control-group">
+
+                { /*onChange: Lembrando que este se trata de um SyntheticEvent que será mapeado para o evento real*/}                
+                { /* <div className="pure-control-group">
                     <label htmlFor="name">Name</label> 
-                    <input id="name" type="text" name="name" value={this.state.name}  onChange={this.setName}  />   { /*onChange: Lembrando que este se trata de um SyntheticEvent que será mapeado para o evento real*/}                
+                    <input id="name" type="text" name="name" value={this.state.name}  onChange={this.setName}  />   
                   </div>
                   <div className="pure-control-group">
                     <label htmlFor="job">Job</label> 
                     <input id="job" type="text" name="job" value={this.state.job}  onChange={this.setJob}  />                  
-                  </div>                  
-                  <div className="pure-control-group">                                  
+                  </div>  
+                   <div className="pure-control-group">                                  
                     <label></label> 
                     <button type="submit" className="pure-button pure-button-primary">Submit</button>                                    
-                  </div>
+                  </div> */}
+
+                  <InputCustomizado id="name" type="text" name="name" value={this.state.name} onChange={this.setName} label="Name"/>                                              
+                  <InputCustomizado id="job" type="text" name="job" value={this.state.job} onChange={this.setJob} label="Job"/>  
+                  <BotaoSubmitCustomizado label="Gravar"/>
+                  
                 </form>             
 
               </div>  
@@ -175,6 +191,17 @@ class App extends Component {
                          invocações do setState. Esta é uma informação super importante. Nós declaramos um comportamento, e o estado do 
                          componente indicará o que o React deverá fazer. Ele invocará o render() novamente, será aplicado um novo estado 
                          no seu componente, talvez seja gerado um novo Virtual DOM. Logo, ele irá aplicar as aplicações na págin
+
+                        
+                         INTERESSANTE
+                         Perceba que não ficamos manipulando os elementos retornados pela função render no caso de crias as linhas da tabela abaixo.
+
+                         * Sempre que o setState é invocado, o React invoca novamente a função render do componente em questão e o estado, se necessário, 
+                           é atualizado
+
+                           Isso realmente facilita muito a manutenção do código, você se preocupa em declarar como é a view de seu componente, em vez de 
+                           ficar manipulando ela diretamente para cada alteração.
+
                       */
                       this.state.list.map(function(autor){
                         return(
