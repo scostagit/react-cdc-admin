@@ -3,12 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import  Login from './login';
-import {Router,Route,browserHistory,IndexRoute} from 'react-router';
+// import {Router,Route,browserHistory,IndexRoute} from 'react-router';
+import {BrowserRouter as Router, Route,Switch} from 'react-router-dom';
 
 
 import * as serviceWorker from './serviceWorker';
 import AutorBox from './Autor';
 import Home from './Home';
+import LivroBox from './Livro';
 
 //ReactDOM.render(<Login/>, document.getElementById('login'));
 
@@ -20,7 +22,7 @@ já o path para quando clicarmos em "autor" ou em "livro". Os caminhos ficarão 
 Em geral, é de boa prática adicionar parênteses () em casos que quebramos a linha. Desta forma, ficará visualmente mais simples 
 compreender que se trata de uma única expressão.
 */
-ReactDOM.render(
+/*ReactDOM.render(
     (<Router history={browserHistory}>
         <Route path="/" component={App}>
             <IndexRoute component={Home}/>
@@ -29,7 +31,22 @@ ReactDOM.render(
         </Route>
     </Router>),
     document.getElementById('root')
-  );
+  );*/
+
+
+  ReactDOM.render((
+    <Router>
+        <App>
+                <Switch>            
+                    <Route exact path="/" component={Home}/>
+                    <Route path="/autor" component={AutorBox}/>
+                    <Route path="/livro" component={LivroBox}/>                
+                </Switch>            
+        </App>
+    </Router>
+
+), document.getElementById('root'));
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
