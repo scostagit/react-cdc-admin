@@ -5,6 +5,7 @@ import BotaoSubmitCustomizado from './componentes/BotaoSubmitCustomizado';
 //Agora, ele colocará o objeto exportado no PubSub
 import PubSub from 'pubsub-js';
 import TratadorErros from  './TratadorErros';
+import {Router,Route,browserHistory} from 'react-router';
 
  class FormularioAutor  extends Component{
     constructor(){
@@ -23,9 +24,8 @@ import TratadorErros from  './TratadorErros';
     //============================================================================================
     enviaForm(event){
         event.preventDefault();  //nao quero que o evento seja propago.
-
         $.ajax({
-            url:"/api/users/23", //https://reqres.in/api/users",
+            url:"https://reqres.in/api/users",//"/api/users/23",
             contentType: 'application/json', //como os dados serao enviados
             dataType:'json', //como os dados serao recebidos
             type:'post',
@@ -150,36 +150,41 @@ import TratadorErros from  './TratadorErros';
 
     */  
 
-class TabelaAutores extends Component{
-    render(){
-        return (
-            <div>            
-            <table className="pure-table">
-              <thead>
-                <tr>    
-                  <th></th>                 
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                </tr>
-              </thead>  
-              <tbody>
-                {
-                    this.props.list.map(function(autor){
-                    return (
-                        <tr key={autor.id}>
-                            <td><img src={autor.avatar}/></td>   
-                            <td>{autor.first_name}</td>
-                            <td>{autor.last_name}</td>
-                        </tr>
-                        );
-                    })
-                }
-                </tbody>
-            </table> 
-          </div> 
-        );
-    }
-}
+
+
+class TabelaAutores extends Component {
+
+	render() {       
+		return(
+                <div>            
+                      <table className="pure-table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                             
+                            this.props.list.map(function(autor){
+                              return (
+                                <tr key={autor.id}>
+                                  <td><img src={autor.avatar}/></td>   
+                                    <td>{autor.first_name}</td>
+                                    <td>{autor.last_name}</td>
+                                </tr>
+                              );
+                            })
+                          }
+                        </tbody>
+                      </table> 
+                    </div>             		
+		);
+	}
+}  
+
 
 
 /*
@@ -225,8 +230,7 @@ export default class AutorBox extends Component{
         });  
         
         
-        PubSub.subscribe('atualiza-lista-autores', function(topico,resp){
-             debugger;
+        PubSub.subscribe('atualiza-lista-autores', function(topico,resp){           
              this.state.list.push({id: parseInt(resp.id),
                 first_name:resp.name,
                  last_name:resp.job,
@@ -245,18 +249,20 @@ export default class AutorBox extends Component{
             this.setState({list:this.state.list});
              
     } */
+    render(){
+        return (
+          <div>
+            <div className="header">
+              <h1>Cadastro de autores</h1>
+            </div>
+            <div className="content" id="content">                            
+              <FormularioAutor/>
+              <TabelaAutores list={this.state.list}/>        
+            </div>      
     
-    render() {
-      return(
-         <div>
-           {/* <FormularioAutor callbackAtualizaListagem={this.atualizaListagem}/> */}
-           <FormularioAutor/>
-           <TabelaAutores list={this.state.list}/>  
-         </div>
-
-        
-      );
-    }
+          </div>
+        );
+      }
   }
 
 
