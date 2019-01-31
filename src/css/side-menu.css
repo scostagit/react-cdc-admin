@@ -73,6 +73,10 @@ The content `<div>` is where all your content goes.
 }
 
 
+.erro{
+    color:#EC7063;
+    padding: 5px;
+}
 
 /*
 The `#menu` `<div>` is the parent `<div>` that contains the `.pure-menu` that

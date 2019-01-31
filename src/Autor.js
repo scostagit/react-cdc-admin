@@ -4,6 +4,7 @@ import InputCustomizado from './componentes/InputCustomizado';
 import BotaoSubmitCustomizado from './componentes/BotaoSubmitCustomizado';
 //Agora, ele colocará o objeto exportado no PubSub
 import PubSub from 'pubsub-js';
+import TratadorErros from  './TratadorErros';
 
  class FormularioAutor  extends Component{
     constructor(){
@@ -24,7 +25,7 @@ import PubSub from 'pubsub-js';
         event.preventDefault();  //nao quero que o evento seja propago.
 
         $.ajax({
-            url:"https://reqres.in/api/users",
+            url:"/api/users/23", //https://reqres.in/api/users",
             contentType: 'application/json', //como os dados serao enviados
             dataType:'json', //como os dados serao recebidos
             type:'post',
@@ -62,12 +63,28 @@ import PubSub from 'pubsub-js';
                 Nós trabalhamos ainda mais na parte de desacoplar os componentes e agora, o FormularioAutor simplesmente pública que tem um 
                 formulário cadastrado e quem estiver interessado em receber o aviso, irá ser inscrever neste canal. No nosso caso, o AutorBox 
                 se inscreveu para ser notificado quando novos autores forem cadastrados.
-                */              
+                */   
                 PubSub.publish('atualiza-lista-autores', resp); //topico, object a ser publicado.
             }.bind(this),
 
-            error: function(resp){               
-                console.log("erro: status" + resp.text);
+            error: function(resp){                 
+                if(resp.status === 404){
+                    new TratadorErros().publicaErros(resp);
+                  }   
+            },
+
+            beforeSend:function(){
+                /*
+                  Não adicionaremos um if, porque não nos interessa de qual componente específico estamos limpando a mensagem de erro.
+                  Nós enviamos o limpa-erros e quem estiver registrado com ele, ficará limpo das mensagens.
+                  
+                  --IMPORTANTE
+                  Nós podemos brincar de alterar o estado dos componentes com o React. Não é mais necessário concatenar informações, 
+                  buscar o span e depois, definir a mensagem que aparecerá com os campos vazios. Quem terá o trabalho será o React. 
+                 
+                 ********** Nós só trabalharemos em cima do estado.*********
+                */                
+                PubSub.publish("limpa-erros",{});
             }
         }); 
 
@@ -228,7 +245,6 @@ export default class AutorBox extends Component{
             this.setState({list:this.state.list});
              
     } */
-
     
     render() {
       return(
