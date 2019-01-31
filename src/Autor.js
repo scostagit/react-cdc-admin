@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import $ from 'jquery';
 import InputCustomizado from './componentes/InputCustomizado';
 import BotaoSubmitCustomizado from './componentes/BotaoSubmitCustomizado';
+//Agora, ele colocará o objeto exportado no PubSub
+import PubSub from 'pubsub-js';
 
  class FormularioAutor  extends Component{
     constructor(){
@@ -30,11 +32,38 @@ import BotaoSubmitCustomizado from './componentes/BotaoSubmitCustomizado';
             success:function(resp){            
             // this.state.list.push({name: 'bozo',job: 'paico'});
                 //this.setState({list:resp.data});   
-                debugger;
+                             
+                /*
+                ---------------------------------
+                Higher-order
+                ---------------------------------
+                Enviar os dados atualizados para a listagem de tabela.
+                Nós conseguimos resolver a parte de comunicação entre os componentes de uma maneira padrão no mercado que o React usa, 
+                ao criarmos o Higher-order component (também conhecido como wrapper, ou o "envelopador" traduzido para o português)
+                */
+              
                 this.state.name="";
-                this.state.job ="";                
-                //Enviar os dados atualizados para a listagem de tabela.
-                this.props.callbackAtualizaListagem(resp);             
+                this.state.job ="";  
+                //this.props.callbackAtualizaListagem(resp);    
+            
+               /*
+                Publisher
+                Mas vamos imaginar a seguinte situação, imagine que temos vários componentes na nossa aplicação que estão interessados em ouvir 
+                diversas mensagens, sobre diferentes assuntos. Pode ser sobre a nova listagem ou que um item foi removido. Além de publicarmos o 
+                objeto novo que está disponível para as pessoas manipularem, precisamos indicar qual é o canal, que costumamos chamar de tópico. 
+                Trata-se de um lugar que iremos disponibilizar a informação. O nosso, chamaremos de atualiza-lista-autores.
+
+                Ao cadastrarmos um novo autor, publicaremos no tópico que será ouvido por componentes interessados. Se alguém ficará interessado 
+                em ouvir, é um outro assunto... Logo após montarmos o componente do AutorBox, vamos adicionar o PubSub e vamos nos inscrever ao 
+                tópico atualiza-lista-autores. Quando chegar um objeto novo, precisaremos associar a uma função que será executada. Receberemos 
+                como argumento o canal que estamos escutando. Necessariamente, o primeiro argumento será o topico e o segundo, será o objeto que 
+                foi passado.
+
+                Nós trabalhamos ainda mais na parte de desacoplar os componentes e agora, o FormularioAutor simplesmente pública que tem um 
+                formulário cadastrado e quem estiver interessado em receber o aviso, irá ser inscrever neste canal. No nosso caso, o AutorBox 
+                se inscreveu para ser notificado quando novos autores forem cadastrados.
+                */              
+                PubSub.publish('atualiza-lista-autores', resp); //topico, object a ser publicado.
             }.bind(this),
 
             error: function(resp){               
@@ -149,7 +178,7 @@ export default class AutorBox extends Component{
         */   
         this.state = {list : []};
         //Informamos que o atualizaListagem usará o this do React
-        this.atualizaListagem = this.atualizaListagem.bind(this);
+//        this.atualizaListagem = this.atualizaListagem.bind(this);
       }    
 
      /*
@@ -176,25 +205,40 @@ export default class AutorBox extends Component{
                 //using the setstatus the react will know that it have to updated the state.
                 this.setState({list:resp.data});          
             }.bind(this)//Bind: you pass to jquery the react context. Jquery does not have the function setState.
-        });     
-    }  
+        });  
+        
+        
+        PubSub.subscribe('atualiza-lista-autores', function(topico,resp){
+             debugger;
+             this.state.list.push({id: parseInt(resp.id),
+                first_name:resp.name,
+                 last_name:resp.job,
+                 avatar:"https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg"}); 
+                
+                 this.setState({list:this.state.list});
+         }.bind(this));
+    } 
 
-    // atualizaListagem(novaLista) {
-    atualizaListagem(resp) {      
+   
+    /*atualizaListagem(resp) {
         this.state.list.push({id: parseInt(resp.id),
             first_name:resp.name,
             last_name:resp.job,
-            avatar:"https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg"}); 
-            
+            avatar:"https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg"});             
             this.setState({list:this.state.list});
-             //this.setState({list:novaLista});
-    } 
+             
+    } */
+
+    
     render() {
       return(
-        <div>
-          <FormularioAutor callbackAtualizaListagem={this.atualizaListagem}/>
-          <TabelaAutores list={this.state.list}/>  
-        </div>
+         <div>
+           {/* <FormularioAutor callbackAtualizaListagem={this.atualizaListagem}/> */}
+           <FormularioAutor/>
+           <TabelaAutores list={this.state.list}/>  
+         </div>
+
+        
       );
     }
   }
