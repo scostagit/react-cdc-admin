@@ -12,9 +12,15 @@ import {Router,Route,browserHistory} from 'react-router';
         super();
         this.state = {name:'', job:''};
         this.enviaForm = this.enviaForm.bind(this); //passa o this para o contexto da funcacao enviarForm.
-        this.setName = this.setName.bind(this);
-        this.setJob = this.setJob.bind(this);
-    }         
+        // this.setName = this.setName.bind(this);
+        // this.setJob = this.setJob.bind(this);
+    }    
+    
+    salvaAlteracao(nomeInput,evento){
+        var campoSendoAlterado = [];
+        campoSendoAlterado[nomeInput] = evento.target.value;
+        this.setState(campoSendoAlterado);
+      }
 
     //============================================================================================
     //SyntheticEvents ----------------------------------------------------------------------------
@@ -111,8 +117,8 @@ import {Router,Route,browserHistory} from 'react-router';
                  <form className="pure-form pure-form-aligned" onSubmit={this.enviaForm.bind(this)} method="post">*/}
                 <form className="pure-form pure-form-aligned" onSubmit={this.enviaForm} method="post">
                     { /*onChange: Lembrando que este se trata de um SyntheticEvent que será mapeado para o evento real*/} 
-                    <InputCustomizado id="name" type="text" name="name" value={this.state.name} onChange={this.setName} label="Name"/>                                              
-                    <InputCustomizado id="job" type="text" name="job" value={this.state.job} onChange={this.setJob} label="Job"/>  
+                    <InputCustomizado id="name" type="text" name="name" value={this.state.name} onChange={this.salvaAlteracao.bind(this,'name')} label="Name"/>                     
+                    <InputCustomizado id="job" type="text" name="job" value={this.state.job} onChange={this.salvaAlteracao.bind(this,'job')} label="Job"/>  
                     <BotaoSubmitCustomizado label="Gravar"/>
                   
                   </form> 
